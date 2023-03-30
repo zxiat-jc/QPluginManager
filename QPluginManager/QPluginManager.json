@@ -1,0 +1,17 @@
+{
+    "Name": "QPluginManager",
+    "Version": "0.0.0",
+    "CompatVersion": "0.0.0",
+    "Experimental": true,
+    "DisabledByDefault": false,
+    "Required": true,
+    "Descriptions": {
+        "Category": "Test",
+        "Vendor": "CN",
+        "Copyright": "CN",
+        "License": "MIT",
+        "Description": "插件管理器",
+        "LongDescription": "插件管理器",
+        "Url": "https://github.com/WindSnowLi"
+    }
+}

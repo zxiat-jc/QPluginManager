@@ -1,0 +1,53 @@
+﻿#include "QPluginManager.h"
+
+#include <QDebug>
+
+#include "QPluginManagerImpl.h"
+
+QPluginManager::QPluginManager()
+{
+    qDebug() << "QPluginManager::QPluginManager()";
+    this->_impl = new QPluginManagerImpl();
+}
+
+QPluginManager& QPluginManager::Instance()
+{
+    static QPluginManager instance;
+    return instance;
+}
+
+QPluginManager::~QPluginManager()
+{
+    qDebug() << "QPluginManager::~QPluginManager()";
+    delete this->_impl;
+}
+
+void QPluginManager::loadPlugin(const QString& path)
+{
+    this->_impl->loadPlugin(path);
+}
+
+void QPluginManager::loadPlugins(const QString& path)
+{
+    this->_impl->loadPlugins(path);
+}
+
+void QPluginManager::findLoadPlugins(const QString& path)
+{
+    this->_impl->findLoadPlugins(path);
+}
+
+bool QPluginManager::isLoad(const QString& name)
+{
+    return this->_impl->isLoad(name);
+}
+
+std::optional<QObject*> QPluginManager::load(const QString& name)
+{
+    return this->_impl->load(name);
+}
+
+QList<QString> QPluginManager::pluginNames() const
+{
+    return this->_impl->pluginNames();
+}

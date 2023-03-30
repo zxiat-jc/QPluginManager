@@ -1,0 +1,17 @@
+{
+    "Name": "QLogPluginTest",
+    "Version": "0.0.0",
+    "CompatVersion": "0.0.0",
+    "Experimental": true,
+    "DisabledByDefault": false,
+    "Required": true,
+    "Descriptions": {
+        "Category": "Test",
+        "Vendor": "CN",
+        "Copyright": "CN",
+        "License": "MIT",
+        "Description": "日志插件测试",
+        "LongDescription": "日志插件测试",
+        "Url": "https://baidu.com"
+    }
+}
