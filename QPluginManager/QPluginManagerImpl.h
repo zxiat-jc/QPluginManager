@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QPluginLoader>
+#include <QSharedPointer>
 
 #include <optional>
 
@@ -15,7 +16,7 @@ private:
     /**
      * @brief {路径，加载器}Map表
      */
-    QMap<QString, QPluginLoader*> _pluginMap;
+    QMap<QString, QSharedPointer<QPluginLoader>> _pluginMap;
     /**
      * @brief 加载器{路径，对象名}Map表
      */
@@ -23,14 +24,14 @@ private:
     /**
      * @brief {对象名，指针}Map表
      */
-    QMap<QString, QObject*> _objMap;
+    QMap<QString, PluginInterface*> _objMap;
     /**
      * @brief 加载顺序表
      */
     QList<QString> _paths;
 
 public:
-    ~QPluginManagerImpl();
+    ~QPluginManagerImpl() override;
 
     /**
      * @brief 加载指定路径下的单个插件
@@ -62,7 +63,7 @@ public:
      * @param name 插件实例名
      * @return 插件实例指针
      */
-    std::optional<QObject*> load(const QString& name);
+    std::optional<PluginInterface*> load(const QString& name);
 
     /**
      * @brief 获取插件列表

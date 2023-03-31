@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QLogPluginTest", "QLogPlugi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QPluginManagerUnitTest", "QPluginManagerUnitTest\QPluginManagerUnitTest.vcxproj", "{54E08448-8A7A-4441-AD10-B88E2E2E5AD9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QPluginInterface", "QPluginInterface\QPluginInterface.vcxproj", "{6109245D-0476-4A22-BA69-B38175E32B29}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -27,6 +29,10 @@ Global
 		{54E08448-8A7A-4441-AD10-B88E2E2E5AD9}.Debug|x64.Build.0 = Debug|x64
 		{54E08448-8A7A-4441-AD10-B88E2E2E5AD9}.Release|x64.ActiveCfg = Release|x64
 		{54E08448-8A7A-4441-AD10-B88E2E2E5AD9}.Release|x64.Build.0 = Release|x64
+		{6109245D-0476-4A22-BA69-B38175E32B29}.Debug|x64.ActiveCfg = Debug|x64
+		{6109245D-0476-4A22-BA69-B38175E32B29}.Debug|x64.Build.0 = Debug|x64
+		{6109245D-0476-4A22-BA69-B38175E32B29}.Release|x64.ActiveCfg = Release|x64
+		{6109245D-0476-4A22-BA69-B38175E32B29}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

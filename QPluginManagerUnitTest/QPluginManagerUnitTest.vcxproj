@@ -78,7 +78,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(QTDIR)\lib;$(SolutionDir)$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(QTDIR)\include;$(QTDIR)\include\QtCore;$(IncludePath)</IncludePath>
+    <IncludePath>..\QPluginManager;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -106,7 +106,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Qt6Cored.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Qt6Cored.lib;QPluginManager.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -162,7 +162,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Qt6Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Qt6Core.lib;QPluginManager.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -180,6 +180,9 @@
   <ItemGroup>
     <ProjectReference Include="..\QLogPluginTest\QLogPluginTest.vcxproj">
       <Project>{3d471736-9254-43fb-aa93-be2959e5dd02}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\QPluginInterface\QPluginInterface.vcxproj">
+      <Project>{6109245d-0476-4a22-ba69-b38175e32b29}</Project>
     </ProjectReference>
     <ProjectReference Include="..\QPluginManager\QPluginManager.vcxproj">
       <Project>{ea98ef0f-bdfe-47c3-8d37-60203985daf9}</Project>

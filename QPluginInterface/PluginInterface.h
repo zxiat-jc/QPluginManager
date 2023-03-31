@@ -6,7 +6,7 @@ class PluginInterface : public QObject {
     Q_OBJECT;
 
 public:
-    ~PluginInterface() override;
+    virtual ~PluginInterface() = 0;
 
     /**
      * @brief 批量初始化

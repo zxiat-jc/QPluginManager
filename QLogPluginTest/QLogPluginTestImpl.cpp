@@ -4,6 +4,7 @@
 
 QLogPluginTestImpl::~QLogPluginTestImpl()
 {
+    qInfo() << "QLogPluginTestImpl::~QLogPluginTestImpl()";
 }
 
 bool QLogPluginTestImpl::log()

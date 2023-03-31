@@ -42,7 +42,7 @@ bool QPluginManager::isLoad(const QString& name)
     return this->_impl->isLoad(name);
 }
 
-std::optional<QObject*> QPluginManager::load(const QString& name)
+std::optional<PluginInterface*> QPluginManager::load(const QString& name)
 {
     return this->_impl->load(name);
 }

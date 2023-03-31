@@ -5,10 +5,9 @@
 #include <QFileInfo>
 #include <QLibrary>
 
-#include "PluginInterface.h"
-
 QPluginManagerImpl::~QPluginManagerImpl()
 {
+    qDebug() << "QPluginManagerImpl::~QPluginManagerImpl()";
     for (size_t i = 0; i < _paths.size(); i++) {
         QString path = _paths.at(_paths.size() - 1);
         if (_pathNameMap.contains(path)) {
@@ -20,13 +19,13 @@ QPluginManagerImpl::~QPluginManagerImpl()
             _paths.pop_back();
             continue;
         }
-        QPluginLoader* loader = this->_pluginMap[path];
+        auto&& loader = this->_pluginMap[path];
         if (loader) {
             loader->unload();
-            delete loader;
         }
         _paths.pop_back();
         this->_pluginMap.remove(path);
+        qInfo() << "卸载插件:" << path;
     }
 }
 
@@ -42,19 +41,21 @@ void QPluginManagerImpl::loadPlugin(const QString& path)
         qInfo() << "插件已加载:" << path;
         return;
     }
-    QPluginLoader* loader = new QPluginLoader(path);
+    QSharedPointer<QPluginLoader> loader = QSharedPointer<QPluginLoader>(new QPluginLoader(path));
+    if (!loader->load()) {
+        loader->unload();
+        return;
+    }
     if (QObject* obj = loader->instance()) {
         auto&& meta = loader->metaData().value("MetaData").toObject();
-        if (meta.isEmpty()) {
+        if (!obj->inherits("PluginInterface") || meta.isEmpty() || !meta.contains(NAME)) {
+            loader->unload();
             return;
         }
         qInfo() << "元信息:" << meta;
-        if (!meta.contains(NAME)) {
-            return;
-        }
         _pluginMap.insert(path, loader);
         _pathNameMap.insert(path, meta.value(NAME).toString());
-        _objMap.insert(path, obj);
+        _objMap.insert(path, reinterpret_cast<PluginInterface*>(obj));
         _paths.push_back(path);
     }
 }
@@ -89,7 +90,7 @@ bool QPluginManagerImpl::isLoad(const QString& name)
     return _objMap.contains(name) && _objMap[name] != nullptr;
 }
 
-std::optional<QObject*> QPluginManagerImpl::load(const QString& name)
+std::optional<PluginInterface*> QPluginManagerImpl::load(const QString& name)
 {
     if (_objMap.contains(name) && _objMap[name] != nullptr) {
         return { _objMap[name] };

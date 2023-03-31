@@ -21,33 +21,29 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
-    <Filter Include="Header Files\interface">
-      <UniqueIdentifier>{10c60212-1ec9-41fc-84b0-5b8d12bd82e6}</UniqueIdentifier>
+    <Filter Include="Header Files\alias">
+      <UniqueIdentifier>{8dffc252-74ee-459c-96f7-4bd51c775957}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\impl">
-      <UniqueIdentifier>{3dbf58cb-f818-4102-b85b-4a29e6b4bda0}</UniqueIdentifier>
+    <Filter Include="Header Files\interface">
+      <UniqueIdentifier>{5666dbbc-4168-457c-8737-3f1d181140b3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\interface">
-      <UniqueIdentifier>{b3ca7786-51e3-41a6-91c7-a2bdff220948}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\impl">
-      <UniqueIdentifier>{08415a7b-af4c-4fb8-bc01-ec9a1b8ca70c}</UniqueIdentifier>
+      <UniqueIdentifier>{1c6f0e13-4ea4-45e1-bf59-45ebc272fe33}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="QPluginManager.h">
+    <ClInclude Include="QClassRegister.h">
+      <Filter>Header Files\alias</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="PluginInterface.h">
       <Filter>Header Files\interface</Filter>
-    </ClInclude>
-    <ClInclude Include="QPluginManagerImpl.h">
-      <Filter>Header Files\impl</Filter>
-    </ClInclude>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="QPluginManager.cpp">
+    <ClCompile Include="PluginInterface.cpp">
       <Filter>Source Files\interface</Filter>
-    </ClCompile>
-    <ClCompile Include="QPluginManagerImpl.cpp">
-      <Filter>Source Files\impl</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

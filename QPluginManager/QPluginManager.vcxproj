@@ -102,14 +102,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="PluginInterface.cpp" />
     <ClCompile Include="QPluginManagerImpl.cpp" />
-    <QtMoc Include="PluginInterface.h" />
-    <ClInclude Include="QClassRegister.h" />
     <ClInclude Include="QPluginManagerImpl.h" />
-    <ClInclude Include="qpluginmanager_global.h" />
     <ClInclude Include="QPluginManager.h" />
     <ClCompile Include="QPluginManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QPluginInterface\QPluginInterface.vcxproj">
+      <Project>{6109245d-0476-4a22-ba69-b38175e32b29}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

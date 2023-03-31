@@ -1,10 +1,22 @@
 ﻿#pragma once
 
-#include "qpluginmanager_global.h"
+#include <QtCore/qglobal.h>
+
+#ifndef BUILD_STATIC
+#if defined(QPLUGINMANAGER_LIB)
+#define QPLUGINMANAGER_EXPORT Q_DECL_EXPORT
+#else
+#define QPLUGINMANAGER_EXPORT Q_DECL_IMPORT
+#endif
+#else
+#define QPLUGINMANAGER_EXPORT
+#endif
 
 #include <QObject>
 
 #include <optional>
+
+#include "PluginInterface.h"
 
 class QPluginManagerImpl;
 class QPLUGINMANAGER_EXPORT QPluginManager {
@@ -54,7 +66,7 @@ public:
      * @param name 插件实例名
      * @return 插件实例指针
      */
-    std::optional<QObject*> load(const QString& name);
+    std::optional<PluginInterface*> load(const QString& name);
 
     /**
      * @brief 获取插件列表

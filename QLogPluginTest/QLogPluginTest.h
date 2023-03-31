@@ -1,6 +1,16 @@
 ﻿#pragma once
 
-#include "qlogplugintest_global.h"
+#include <QtCore/qglobal.h>
+
+#ifndef BUILD_STATIC
+#if defined(QLOGPLUGINTEST_LIB)
+#define QLOGPLUGINTEST_EXPORT Q_DECL_EXPORT
+#else
+#define QLOGPLUGINTEST_EXPORT Q_DECL_IMPORT
+#endif
+#else
+#define QLOGPLUGINTEST_EXPORT
+#endif
 
 #include "PluginInterface.h"
 
@@ -11,7 +21,7 @@ class QLOGPLUGINTEST_EXPORT QLogPluginTest : public PluginInterface {
     Q_OBJECT;
 
 public:
-    virtual ~QLogPluginTest();
+    virtual ~QLogPluginTest() = 0;
 
     /**
      * @brief 输出测试信息
