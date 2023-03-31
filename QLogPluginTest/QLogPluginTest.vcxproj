@@ -103,10 +103,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="PluginInterface.cpp" />
     <ClCompile Include="QLogPluginTestImpl.cpp" />
     <QtMoc Include="QLogPluginTestImpl.h" />
+    <QtMoc Include="PluginInterface.h" />
     <ClInclude Include="qlogplugintest_global.h" />
-    <ClInclude Include="QLogPluginTest.h" />
+    <QtMoc Include="QLogPluginTest.h" />
     <ClCompile Include="QLogPluginTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -51,3 +51,13 @@ QList<QString> QPluginManager::pluginNames() const
 {
     return this->_impl->pluginNames();
 }
+
+bool QPluginManager::initializes(const QStringList& args, QString& error)
+{
+    return this->_impl->initializes(args, error);
+}
+
+bool QPluginManager::extensionsInitialized()
+{
+    return this->_impl->extensionsInitialized();
+}

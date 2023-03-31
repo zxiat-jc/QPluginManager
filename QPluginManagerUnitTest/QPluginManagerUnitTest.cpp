@@ -28,12 +28,22 @@ public:
         Assert::AreEqual(plugins.isEmpty(), false);
         Assert::AreEqual(QPluginManager::Instance().isLoad(plugins[0]), true);
     }
+    TEST_METHOD(inits)
+    {
+        QPluginManager::Instance().findLoadPlugins(QDir("..").absolutePath());
+        auto&& plugins = QPluginManager::Instance().pluginNames();
+        Assert::AreEqual(plugins.isEmpty(), false);
+        QString error;
+        Assert::AreEqual(QPluginManager::Instance().initializes({}, error), true);
+    }
     TEST_METHOD(GetPtr)
     {
         QPluginManager::Instance().findLoadPlugins(QDir("..").absolutePath());
         auto&& plugins = QPluginManager::Instance().pluginNames();
         Assert::AreEqual(plugins.isEmpty(), false);
         Assert::AreEqual(QPluginManager::Instance().isLoad(plugins[0]), true);
+        QString error;
+        Assert::AreEqual(QPluginManager::Instance().initializes({}, error), true);
         auto&& opt = QPluginManager::Instance().load(plugins[0]);
         Assert::AreEqual(opt.has_value(), true);
         auto&& ptr = qobject_cast<QLogPluginTest*>(opt.value());

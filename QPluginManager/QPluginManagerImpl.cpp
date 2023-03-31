@@ -5,6 +5,8 @@
 #include <QFileInfo>
 #include <QLibrary>
 
+#include "PluginInterface.h"
+
 QPluginManagerImpl::~QPluginManagerImpl()
 {
     for (size_t i = 0; i < _paths.size(); i++) {
@@ -98,4 +100,30 @@ std::optional<QObject*> QPluginManagerImpl::load(const QString& name)
 QList<QString> QPluginManagerImpl::pluginNames() const
 {
     return _objMap.keys();
+}
+
+bool QPluginManagerImpl::initializes(const QStringList& args, QString& error)
+{
+    for (auto&& obj : _objMap) {
+        if (obj) {
+            if (PluginInterface* plugin = qobject_cast<PluginInterface*>(obj)) {
+                if (!plugin->initialize(args, error)) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+bool QPluginManagerImpl::extensionsInitialized()
+{
+    for (auto&& obj : _objMap) {
+        if (PluginInterface* plugin = qobject_cast<PluginInterface*>(obj)) {
+            if (!plugin->extensionsInitialize()) {
+                return false;
+            }
+        }
+    }
+    return true;
 }

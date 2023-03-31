@@ -69,4 +69,18 @@ public:
      * @return 插件名列表
      */
     QList<QString> pluginNames() const;
+
+    /**
+     * @brief 批量初始化
+     * @param args 程序启动参数
+     * @param error 初始化错误信息
+     * @return 初始化状态
+     */
+    bool initializes(const QStringList& args, QString& error);
+
+    /**
+     * @brief 初始化之后扩展初始化
+     * @return 初始化状态
+     */
+    bool extensionsInitialized();
 };
