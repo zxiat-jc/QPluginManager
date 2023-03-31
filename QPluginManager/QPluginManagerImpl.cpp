@@ -5,6 +5,9 @@
 #include <QFileInfo>
 #include <QLibrary>
 
+#include <algorithm>
+#include <ranges>
+
 QPluginManagerImpl::~QPluginManagerImpl()
 {
     qDebug() << "QPluginManagerImpl::~QPluginManagerImpl()";
@@ -105,13 +108,9 @@ QList<QString> QPluginManagerImpl::pluginNames() const
 
 bool QPluginManagerImpl::initializes(const QStringList& args, QString& error)
 {
-    for (auto&& obj : _objMap) {
-        if (obj) {
-            if (PluginInterface* plugin = qobject_cast<PluginInterface*>(obj)) {
-                if (!plugin->initialize(args, error)) {
-                    return false;
-                }
-            }
+    for (auto&& plugin : _objMap) {
+        if (plugin) {
+            plugin->initialize(args, error);
         }
     }
     return true;
@@ -119,12 +118,6 @@ bool QPluginManagerImpl::initializes(const QStringList& args, QString& error)
 
 bool QPluginManagerImpl::extensionsInitialized()
 {
-    for (auto&& obj : _objMap) {
-        if (PluginInterface* plugin = qobject_cast<PluginInterface*>(obj)) {
-            if (!plugin->extensionsInitialize()) {
-                return false;
-            }
-        }
-    }
+    std::ranges::for_each(std::views::reverse(_objMap.values()), [](const auto& plugin) { plugin->extensionsInitialize(); });
     return true;
 }
