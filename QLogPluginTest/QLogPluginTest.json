@@ -5,6 +5,7 @@
     "Experimental": true,
     "DisabledByDefault": false,
     "Required": true,
+    "Interface": "PluginInterface",
     "Descriptions": {
         "Category": "Test",
         "Vendor": "CN",

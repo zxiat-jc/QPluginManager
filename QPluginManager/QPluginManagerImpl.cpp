@@ -41,18 +41,24 @@ void QPluginManagerImpl::loadPlugin(const QString& path)
     }
     qInfo() << "加载插件路径:" << path;
     if (this->_pluginMap.contains(path)) {
-        qInfo() << "插件已加载:" << path;
+        qInfo() << "定制插件已加载:" << path;
         return;
     }
     QSharedPointer<QPluginLoader> loader = QSharedPointer<QPluginLoader>(new QPluginLoader(path));
+    if (loader->isLoaded()) {
+        qInfo() << "普通插件已加载:" << path;
+        return;
+    }
+    auto&& meta = loader->metaData().value("MetaData").toObject();
+    if (meta.isEmpty() || !meta.contains(NAME) || !(meta.value("Interface").toString() == "PluginInterface")) {
+        return;
+    }
     if (!loader->load()) {
         loader->unload();
         return;
     }
     if (QObject* obj = loader->instance()) {
-        auto&& meta = loader->metaData().value("MetaData").toObject();
-        if (!obj->inherits("PluginInterface") || meta.isEmpty() || !meta.contains(NAME)) {
-            loader->unload();
+        if (!obj->inherits("PluginInterface")) {
             return;
         }
         qInfo() << "元信息:" << meta;

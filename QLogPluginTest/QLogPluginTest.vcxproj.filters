@@ -50,4 +50,9 @@
       <Filter>Header Files\interface</Filter>
     </QtMoc>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="QLogPluginTest.json">
+      <Filter>Form Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>
