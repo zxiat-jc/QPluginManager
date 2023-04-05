@@ -56,14 +56,13 @@
 #endif // !RegisterMetaType
 
 #ifndef GetPluginPtr
-#define GetPluginPtr(className)                                \
-    [](const QString& name) {                                  \
-        auto&& opt = QPluginManager::Instance().load(name);    \
-        assert(!opt.has_value());                              \
-        qWarning() << "GetPluginPtr:" << name << "is nullptr"; \
-        if (!opt.has_value()) {                                \
-            return nullptr;                                    \
-        }                                                      \
-        return opt.value();                                    \
+#define GetPluginPtr(className)                                                      \
+    [](const QString& name) -> std::optional<className*> {                           \
+        auto&& opt = QPluginManager::Instance().load(name);                          \
+        assert(opt.has_value());                                                     \
+        if (!opt.has_value()) {                                                      \
+            qWarning() << "GetPluginPtr:" << name << "is nullptr";                   \
+        }                                                                            \
+        return std::optional<className*>(reinterpret_cast<className*>(opt.value())); \
     }(#className)
 #endif // !GetPluginPtr

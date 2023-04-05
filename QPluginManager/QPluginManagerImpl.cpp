@@ -54,6 +54,7 @@ void QPluginManagerImpl::loadPlugin(const QString& path)
         return;
     }
     if (!loader->load()) {
+        qWarning() << "加载失败:" << loader->errorString();
         loader->unload();
         return;
     }
@@ -63,8 +64,9 @@ void QPluginManagerImpl::loadPlugin(const QString& path)
         }
         qInfo() << "元信息:" << meta;
         _pluginMap.insert(path, loader);
+        qDebug() << "插件名称:" << meta.value(NAME).toString();
         _pathNameMap.insert(path, meta.value(NAME).toString());
-        _objMap.insert(path, reinterpret_cast<PluginInterface*>(obj));
+        _objMap.insert(meta.value(NAME).toString(), reinterpret_cast<PluginInterface*>(obj));
         _paths.push_back(path);
     }
 }
