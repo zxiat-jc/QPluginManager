@@ -24,3 +24,9 @@ bool QLogPluginTestImpl::extensionsInitialize()
     qInfo() << "QLogPluginTest extensionsInitialize";
     return true;
 }
+
+bool QLogPluginTestImpl::delayedInitialize()
+{
+    qInfo() << "QLogPluginTest delayedInitialize";
+    return true;
+}

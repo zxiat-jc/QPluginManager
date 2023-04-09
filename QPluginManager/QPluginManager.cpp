@@ -61,3 +61,8 @@ bool QPluginManager::extensionsInitialized()
 {
     return this->_impl->extensionsInitialized();
 }
+
+bool QPluginManager::delayedInitialize()
+{
+    return this->_impl->delayedInitialize();
+}

@@ -129,3 +129,9 @@ bool QPluginManagerImpl::extensionsInitialized()
     std::ranges::for_each(std::views::reverse(_objMap.values()), [](const auto& plugin) { plugin->extensionsInitialize(); });
     return true;
 }
+
+bool QPluginManagerImpl::delayedInitialize()
+{
+    std::ranges::for_each(std::views::reverse(_objMap.values()), [](const auto& plugin) { plugin->delayedInitialize(); });
+    return true;
+}

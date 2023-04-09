@@ -84,4 +84,10 @@ public:
      * @return 初始化状态
      */
     bool extensionsInitialized();
+
+    /**
+     * @brief 延迟初始化，执行信号功能
+     * @return 初始化状态
+     */
+    bool delayedInitialize();
 };
