@@ -3,8 +3,6 @@
 #include <QCoreApplication>
 #include <QVariant>
 
-#include "QPluginManager.h"
-
 #ifndef GetQValueClassName
 #define GetQValueClassName(value) [](const QObject* obj) { return obj->metaObject()->className(); }(value)
 #endif
@@ -55,6 +53,7 @@
     QT_END_NAMESPACE
 #endif // !RegisterMetaType
 
+#ifdef QPLUGINMANAGER
 #ifndef GetPluginPtr
 #define GetPluginPtr(className)                                                      \
     [](const QString& name) -> std::optional<className*> {                           \
@@ -66,3 +65,8 @@
         return std::optional<className*>(reinterpret_cast<className*>(opt.value())); \
     }(#className)
 #endif // !GetPluginPtr
+#else
+#ifndef GetPluginPtr
+#define GetPluginPtr(className) std::optional<className*>(nullptr)
+#endif // !GetPluginPtr
+#endif // !QPLUGINMANAGER

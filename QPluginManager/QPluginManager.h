@@ -18,6 +18,12 @@
 
 #include "PluginInterface.h"
 
+#ifndef QPLUGINMANAGER
+#define QPLUGINMANAGER QPluginManager::Instance()
+#endif
+
+#include "QClassRegister.h"
+
 class QPluginManagerImpl;
 class QPLUGINMANAGER_EXPORT QPluginManager {
 protected:
