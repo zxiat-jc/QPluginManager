@@ -68,5 +68,6 @@
 #else
 #ifndef GetPluginPtr
 #define GetPluginPtr(className) std::optional<className*>(nullptr)
+#pragma message("QPluginManager is not defined, GetPluginPtr is nullptr")
 #endif // !GetPluginPtr
 #endif // !QPLUGINMANAGER
