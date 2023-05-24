@@ -55,19 +55,20 @@
 
 #ifdef QPLUGINMANAGER
 #ifndef GetPluginPtr
-#define GetPluginPtr(className)                                                      \
-    [](const QString& name) -> std::optional<className*> {                           \
-        auto&& opt = QPluginManager::Instance().load(name);                          \
-        assert(opt.has_value());                                                     \
-        if (!opt.has_value()) {                                                      \
-            qWarning() << "GetPluginPtr:" << name << "is nullptr";                   \
-        }                                                                            \
-        return std::optional<className*>(reinterpret_cast<className*>(opt.value())); \
+#define GetPluginPtr(className)                                    \
+    [](const QString& name) -> std::optional<className*> {         \
+        auto&& opt = QPluginManager::Instance().load(name);        \
+        assert(opt.has_value());                                   \
+        if (!opt.has_value()) {                                    \
+            qWarning() << "GetPluginPtr:" << name << "is nullptr"; \
+            return { std::nullopt };                               \
+        }                                                          \
+        return { reinterpret_cast<className*>(opt.value()) };      \
     }(#className)
 #endif // !GetPluginPtr
 #else
 #ifndef GetPluginPtr
-#define GetPluginPtr(className) std::optional<className*>(nullptr)
+#define GetPluginPtr(className) std::optional<className*>(std::nullopt)
 #pragma message("QPluginManager is not defined, GetPluginPtr is nullptr")
 #endif // !GetPluginPtr
 #endif // !QPLUGINMANAGER
