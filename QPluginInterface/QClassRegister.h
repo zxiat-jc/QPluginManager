@@ -2,6 +2,7 @@
 
 #include <QCoreApplication>
 #include <QVariant>
+#include <qDebug>
 
 #ifndef GetQValueClassName
 #define GetQValueClassName(value) [](const QObject* obj) { return obj->metaObject()->className(); }(value)
