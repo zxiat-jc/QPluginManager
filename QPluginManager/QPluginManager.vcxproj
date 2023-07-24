@@ -100,7 +100,7 @@
     <PublicIncludeDirectories>..\QPluginManager</PublicIncludeDirectories>
     <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
     <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
-    <TargetName>Qt5$(ProjectName)</TargetName>
+    <TargetName>$(ProjectName)Qt5</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PublicIncludeDirectories>..\QPluginManager</PublicIncludeDirectories>
@@ -111,7 +111,7 @@
     <PublicIncludeDirectories>..\QPluginManager</PublicIncludeDirectories>
     <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
     <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
-    <TargetName>Qt5$(ProjectName)</TargetName>
+    <TargetName>$(ProjectName)Qt5</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

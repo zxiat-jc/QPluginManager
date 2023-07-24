@@ -104,8 +104,8 @@
     <PublicIncludeDirectories>..\QPluginInterface</PublicIncludeDirectories>
     <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
     <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\plugins\Qt5$(ProjectName)\</OutDir>
-    <TargetName>Qt5$(ProjectName)</TargetName>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\plugins\$(ProjectName)Qt5\</OutDir>
+    <TargetName>$(ProjectName)Qt5</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PublicIncludeDirectories>..\QPluginInterface</PublicIncludeDirectories>
@@ -115,8 +115,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Qt5Release|x64'">
     <PublicIncludeDirectories>..\QPluginInterface</PublicIncludeDirectories>
     <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\plugins\Qt5$(ProjectName)\</OutDir>
-    <TargetName>Qt5$(ProjectName)</TargetName>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\plugins\$(ProjectName)Qt5\</OutDir>
+    <TargetName>$(ProjectName)Qt5</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
