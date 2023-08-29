@@ -1,6 +1,11 @@
 ﻿#pragma once
 
 #include <QObject>
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#pragma execution_character_set("utf-8")
+#endif
+
 #include <QPluginLoader>
 #include <QSharedPointer>
 
