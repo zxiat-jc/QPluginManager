@@ -25,6 +25,19 @@
     }()
 #endif
 
+#ifndef RegisterQClassP
+#define RegisterQClassP(className, parent)                                 \
+    [&]() {                                                                \
+        auto&& rs = qApp->property(#className).value<void*>();             \
+        if (rs == nullptr) {                                               \
+            rs = new className(parent);                                    \
+            qApp->setProperty(#className, QVariant::fromValue((void*)rs)); \
+        };                                                                 \
+        assert(rs != nullptr);                                             \
+        return static_cast<className*>(rs);                                \
+    }()
+#endif
+
 #ifndef GetRegisterQClass
 // 获取注册的对象
 #define GetRegisterQClass(className)                                          \
