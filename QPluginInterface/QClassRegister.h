@@ -59,8 +59,7 @@
         {                                                                       \
             static QBasicAtomicInt metatype_id = Q_BASIC_ATOMIC_INITIALIZER(0); \
             if (!metatype_id)                                                   \
-                metatype_id = qRegisterMetaType<className>(#className,          \
-                    reinterpret_cast<className*>(quintptr(-1)));                \
+                metatype_id = qRegisterMetaType<className>(#className);         \
             return metatype_id;                                                 \
         }                                                                       \
     };                                                                          \
