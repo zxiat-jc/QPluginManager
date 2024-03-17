@@ -6,7 +6,6 @@
 #include <QLibrary>
 
 #include <algorithm>
-#include <ranges>
 
 QPluginManagerImpl::~QPluginManagerImpl()
 {
@@ -126,12 +125,24 @@ bool QPluginManagerImpl::initializes(const QStringList& args, QString& error)
 
 bool QPluginManagerImpl::extensionsInitialized()
 {
-    std::ranges::for_each(std::views::reverse(_objMap.values()), [](const auto& plugin) { plugin->extensionsInitialize(); });
-    return true;
+	auto&& values = _objMap.values();
+	auto rbegin = std::make_reverse_iterator(values.end());
+	auto rend = std::make_reverse_iterator(values.begin());
+
+	std::for_each(rbegin, rend, [](const auto& plugin) {
+		plugin->extensionsInitialize();
+	}); 
+	return true;
 }
 
 bool QPluginManagerImpl::delayedInitialize()
 {
-    std::ranges::for_each(std::views::reverse(_objMap.values()), [](const auto& plugin) { plugin->delayedInitialize(); });
-    return true;
+	auto&& values = _objMap.values();
+	auto rbegin = std::make_reverse_iterator(values.end());
+	auto rend = std::make_reverse_iterator(values.begin());
+
+	std::for_each(rbegin, rend, [](const auto& plugin) {
+		plugin->delayedInitialize();
+	}); 
+	return true;
 }
