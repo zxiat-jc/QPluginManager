@@ -19,10 +19,6 @@ constexpr auto NAME = "Name";
 class QPluginManagerImpl : public QObject {
 private:
     /**
-     * @brief {路径，加载器}Map表
-     */
-    QMap<QString, QSharedPointer<QPluginLoader>> _pluginMap;
-    /**
      * @brief 加载器{路径，对象名}Map表
      */
     QMap<QString, QString> _pathNameMap;

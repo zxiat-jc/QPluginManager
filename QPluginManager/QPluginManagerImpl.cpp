@@ -11,24 +11,19 @@ QPluginManagerImpl::~QPluginManagerImpl()
 {
     qDebug() << "QPluginManagerImpl::~QPluginManagerImpl()";
     for (size_t i = 0; i < _paths.size(); i++) {
-        QString path = _paths.at(_paths.size() - 1);
+        QString path = _paths.at(i);
         if (_pathNameMap.contains(path)) {
             QString name = _pathNameMap[path];
+            _objMap[name]->deleteLater();
             _objMap.remove(name);
             _pathNameMap.remove(path);
         }
-        if (!this->_pluginMap.contains(path)) {
-            _paths.pop_back();
-            continue;
-        }
-        auto&& loader = this->_pluginMap[path];
-        if (loader) {
-            loader->unload();
-        }
-        _paths.pop_back();
-        this->_pluginMap.remove(path);
         qInfo() << "卸载插件:" << path;
     }
+    _pathNameMap.clear();
+    _objMap.clear();
+    // 等待消息执行结束
+    QCoreApplication::processEvents();
 }
 
 void QPluginManagerImpl::loadPlugin(const QString& path)
@@ -39,11 +34,11 @@ void QPluginManagerImpl::loadPlugin(const QString& path)
         return;
     }
     qInfo() << "加载插件路径:" << path;
-    if (this->_pluginMap.contains(path)) {
+    if (this->_paths.contains(path)) {
         qInfo() << "定制插件已加载:" << path;
         return;
     }
-    QSharedPointer<QPluginLoader> loader = QSharedPointer<QPluginLoader>(new QPluginLoader(path));
+    QScopedPointer<QPluginLoader> loader(new QPluginLoader(path));
     if (loader->isLoaded()) {
         qInfo() << "普通插件已加载:" << path;
         return;
@@ -62,11 +57,11 @@ void QPluginManagerImpl::loadPlugin(const QString& path)
             return;
         }
         qInfo() << "元信息:" << meta;
-        _pluginMap.insert(path, loader);
         qDebug() << "插件名称:" << meta.value(NAME).toString();
         _pathNameMap.insert(path, meta.value(NAME).toString());
         _objMap.insert(meta.value(NAME).toString(), reinterpret_cast<PluginInterface*>(obj));
         _paths.push_back(path);
+        loader.reset();
     }
 }
 
