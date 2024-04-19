@@ -17,6 +17,7 @@ constexpr auto PLUGIN_SUFFIX = "dll";
 constexpr auto NAME = "Name";
 
 class QPluginManagerImpl : public QObject {
+    Q_OBJECT
 private:
     /**
      * @brief 加载器{路径，对象名}Map表

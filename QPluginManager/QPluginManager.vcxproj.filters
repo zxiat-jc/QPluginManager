@@ -38,9 +38,6 @@
     <ClInclude Include="QPluginManager.h">
       <Filter>Header Files\interface</Filter>
     </ClInclude>
-    <ClInclude Include="QPluginManagerImpl.h">
-      <Filter>Header Files\impl</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="QPluginManager.cpp">
@@ -49,5 +46,10 @@
     <ClCompile Include="QPluginManagerImpl.cpp">
       <Filter>Source Files\impl</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="QPluginManagerImpl.h">
+      <Filter>Header Files\impl</Filter>
+    </QtMoc>
   </ItemGroup>
 </Project>

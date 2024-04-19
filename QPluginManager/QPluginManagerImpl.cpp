@@ -14,11 +14,14 @@ QPluginManagerImpl::~QPluginManagerImpl()
         QString path = _paths.at(i);
         if (_pathNameMap.contains(path)) {
             QString name = _pathNameMap[path];
+            if (name == "QPluginManager") {
+                continue;
+            }
             _objMap[name]->deleteLater();
             _objMap.remove(name);
             _pathNameMap.remove(path);
+            qInfo() << "卸载插件:" << path;
         }
-        qInfo() << "卸载插件:" << path;
     }
     _pathNameMap.clear();
     _objMap.clear();
@@ -38,7 +41,7 @@ void QPluginManagerImpl::loadPlugin(const QString& path)
         qInfo() << "定制插件已加载:" << path;
         return;
     }
-    QScopedPointer<QPluginLoader> loader(new QPluginLoader(path));
+    QSharedPointer<QPluginLoader> loader(new QPluginLoader(path));
     if (loader->isLoaded()) {
         qInfo() << "普通插件已加载:" << path;
         return;
@@ -61,7 +64,6 @@ void QPluginManagerImpl::loadPlugin(const QString& path)
         _pathNameMap.insert(path, meta.value(NAME).toString());
         _objMap.insert(meta.value(NAME).toString(), reinterpret_cast<PluginInterface*>(obj));
         _paths.push_back(path);
-        loader.reset();
     }
 }
 
@@ -120,24 +122,24 @@ bool QPluginManagerImpl::initializes(const QStringList& args, QString& error)
 
 bool QPluginManagerImpl::extensionsInitialized()
 {
-	auto&& values = _objMap.values();
-	auto rbegin = std::make_reverse_iterator(values.end());
-	auto rend = std::make_reverse_iterator(values.begin());
+    auto&& values = _objMap.values();
+    auto rbegin = std::make_reverse_iterator(values.end());
+    auto rend = std::make_reverse_iterator(values.begin());
 
-	std::for_each(rbegin, rend, [](const auto& plugin) {
-		plugin->extensionsInitialize();
-	}); 
-	return true;
+    std::for_each(rbegin, rend, [](const auto& plugin) {
+        plugin->extensionsInitialize();
+    });
+    return true;
 }
 
 bool QPluginManagerImpl::delayedInitialize()
 {
-	auto&& values = _objMap.values();
-	auto rbegin = std::make_reverse_iterator(values.end());
-	auto rend = std::make_reverse_iterator(values.begin());
+    auto&& values = _objMap.values();
+    auto rbegin = std::make_reverse_iterator(values.end());
+    auto rend = std::make_reverse_iterator(values.begin());
 
-	std::for_each(rbegin, rend, [](const auto& plugin) {
-		plugin->delayedInitialize();
-	}); 
-	return true;
+    std::for_each(rbegin, rend, [](const auto& plugin) {
+        plugin->delayedInitialize();
+    });
+    return true;
 }

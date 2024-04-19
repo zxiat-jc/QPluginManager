@@ -195,7 +195,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="QPluginManagerImpl.cpp" />
-    <ClInclude Include="QPluginManagerImpl.h" />
+    <QtMoc Include="QPluginManagerImpl.h" />
     <ClInclude Include="QPluginManager.h" />
     <ClCompile Include="QPluginManager.cpp" />
   </ItemGroup>
