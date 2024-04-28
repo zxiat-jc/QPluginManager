@@ -68,10 +68,11 @@
 
 // 注册指定类型指针转为属性值
 #ifndef RegisterPropertyPtr
-#define RegisterPropertyPtr(key, ptr)                            \
-    [] {                                                         \
-        qApp->setProperty(key, QVariant::fromValue((void*)ptr)); \
-        return ptr;                                              \
+#define RegisterPropertyPtr(key, ptr)                          \
+    [] {                                                       \
+        auto&& p = ptr;                                        \
+        qApp->setProperty(key, QVariant::fromValue((void*)p)); \
+        return p;                                              \
     }()
 #endif
 
