@@ -66,6 +66,28 @@
     QT_END_NAMESPACE
 #endif // !RegisterMetaType
 
+// 注册指定类型指针转为属性值
+#ifndef RegisterPropertyPtr
+#define RegisterPropertyPtr(key, ptr)                            \
+    [] {                                                         \
+        qApp->setProperty(key, QVariant::fromValue((void*)ptr)); \
+        return ptr;                                              \
+    }()
+#endif
+
+// 获取app属性值转为指定类型指针
+#ifndef GetAppPropertyPtr
+#define GetAppPropertyPtr(key, className)                              \
+    []() -> className* {                                               \
+        auto&& rs = qApp->property(key).value<void*>();                \
+        if (rs == nullptr) {                                           \
+            qWarning() << "GetAppPropertyPtr:" << key << "is nullptr"; \
+            return nullptr;                                            \
+        }                                                              \
+        return reinterpret_cast<className*>(rs);                       \
+    }()
+#endif // !GetAppPropertyPtr
+
 #ifdef QPLUGINMANAGER
 #ifndef GetPluginPtr
 #define GetPluginPtr(className)                                    \
