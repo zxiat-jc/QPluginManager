@@ -31,4 +31,9 @@ public:
      * @return 初始化状态
      */
     virtual bool delayedInitialize() = 0;
+
+    /**
+     * @brief 卸载时释放
+     */
+    virtual void release();
 };

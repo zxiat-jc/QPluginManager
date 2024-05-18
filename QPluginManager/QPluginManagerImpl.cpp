@@ -17,6 +17,7 @@ QPluginManagerImpl::~QPluginManagerImpl()
             if (name == "QPluginManager") {
                 continue;
             }
+            _objMap[name]->release();
             _objMap[name]->deleteLater();
             _objMap.remove(name);
             _pathNameMap.remove(path);

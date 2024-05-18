@@ -3,3 +3,7 @@
 PluginInterface::~PluginInterface()
 {
 }
+
+void PluginInterface::release()
+{
+}
