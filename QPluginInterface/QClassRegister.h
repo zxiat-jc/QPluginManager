@@ -89,6 +89,11 @@
     }()
 #endif // !GetAppPropertyPtr
 
+// set app属性值
+#ifndef SetAppPropertyPtr
+#define SetAppPropertyPtr(key, value) qApp->setProperty(key, QVariant::fromValue((void*)value))
+#endif
+
 #ifdef QPLUGINMANAGER
 #ifndef GetPluginPtr
 #define GetPluginPtr(className)                                    \
