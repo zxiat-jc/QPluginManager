@@ -14,7 +14,7 @@
 
 #ifndef RegisterQClass
 #define RegisterQClass(className)                                          \
-    []() {                                                                 \
+    [&]() {                                                                \
         auto&& rs = qApp->property(#className).value<void*>();             \
         if (rs == nullptr) {                                               \
             rs = new className();                                          \
@@ -41,7 +41,7 @@
 #ifndef GetRegisterQClass
 // 获取注册的对象
 #define GetRegisterQClass(className)                                          \
-    []() {                                                                    \
+    [&]() {                                                                   \
         auto rs = qApp->property(#className).value<void*>();                  \
         if (rs == nullptr)                                                    \
             qWarning() << "GetRegisterQClass:" << #className << "is nullptr"; \
@@ -69,7 +69,7 @@
 // 注册指定类型指针转为属性值
 #ifndef RegisterPropertyPtr
 #define RegisterPropertyPtr(key, ptr)                          \
-    [] {                                                       \
+    [&] {                                                      \
         auto&& p = ptr;                                        \
         qApp->setProperty(key, QVariant::fromValue((void*)p)); \
         return p;                                              \
@@ -79,7 +79,7 @@
 // 获取app属性值转为指定类型指针
 #ifndef GetAppPropertyPtr
 #define GetAppPropertyPtr(key, className)                              \
-    []() -> className* {                                               \
+    [&]() -> className* {                                              \
         auto&& rs = qApp->property(key).value<void*>();                \
         if (rs == nullptr) {                                           \
             qWarning() << "GetAppPropertyPtr:" << key << "is nullptr"; \
@@ -97,7 +97,7 @@
 #ifdef QPLUGINMANAGER
 #ifndef GetPluginPtr
 #define GetPluginPtr(className)                                    \
-    [](const QString& name) -> std::optional<className*> {         \
+    [&](const QString& name) -> std::optional<className*> {        \
         auto&& opt = QPluginManager::Instance().load(name);        \
         assert(opt.has_value());                                   \
         if (!opt.has_value()) {                                    \
