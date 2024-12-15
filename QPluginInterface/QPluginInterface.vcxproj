@@ -99,6 +99,7 @@
     <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
     <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\plugins\$(ProjectName)\</OutDir>
+    <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Qt5Debug|x64'">
     <PublicIncludeDirectories>..\QPluginInterface</PublicIncludeDirectories>
@@ -110,6 +111,7 @@
     <PublicIncludeDirectories>..\QPluginInterface</PublicIncludeDirectories>
     <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\plugins\$(ProjectName)\</OutDir>
+    <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Qt5Release|x64'">
     <PublicIncludeDirectories>..\QPluginInterface</PublicIncludeDirectories>
@@ -119,6 +121,9 @@
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Qt5Debug|x64'">
     <VcpkgConfiguration>Debug</VcpkgConfiguration>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgXUseBuiltInApplocalDeps>true</VcpkgXUseBuiltInApplocalDeps>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
