@@ -40,13 +40,13 @@
 
 #ifndef GetRegisterQClass
 // 获取注册的对象
-#define GetRegisterQClass(className)                                          \
-    [&]() {                                                                   \
-        auto rs = qApp->property(#className).value<void*>();                  \
-        if (rs == nullptr)                                                    \
-            qWarning() << "GetRegisterQClass:" << #className << "is nullptr"; \
-        assert(rs != nullptr);                                                \
-        return static_cast<className*>(rs);                                   \
+#define GetRegisterQClass(className)                                        \
+    [&]() {                                                                 \
+        auto rs = qApp->property(#className).value<void*>();                \
+        if (rs == nullptr)                                                  \
+            qDebug() << "GetRegisterQClass:" << #className << "is nullptr"; \
+        assert(rs != nullptr);                                              \
+        return static_cast<className*>(rs);                                 \
     }()
 #endif
 
@@ -78,14 +78,14 @@
 
 // 获取app属性值转为指定类型指针
 #ifndef GetAppPropertyPtr
-#define GetAppPropertyPtr(key, className)                              \
-    [&]() -> className* {                                              \
-        auto&& rs = qApp->property(key).value<void*>();                \
-        if (rs == nullptr) {                                           \
-            qWarning() << "GetAppPropertyPtr:" << key << "is nullptr"; \
-            return nullptr;                                            \
-        }                                                              \
-        return reinterpret_cast<className*>(rs);                       \
+#define GetAppPropertyPtr(key, className)                            \
+    [&]() -> className* {                                            \
+        auto&& rs = qApp->property(key).value<void*>();              \
+        if (rs == nullptr) {                                         \
+            qDebug() << "GetAppPropertyPtr:" << key << "is nullptr"; \
+            return nullptr;                                          \
+        }                                                            \
+        return reinterpret_cast<className*>(rs);                     \
     }()
 #endif // !GetAppPropertyPtr
 
@@ -96,15 +96,15 @@
 
 #ifdef QPLUGINMANAGER
 #ifndef GetPluginPtr
-#define GetPluginPtr(className)                                    \
-    [&](const QString& name) -> std::optional<className*> {        \
-        auto&& opt = QPluginManager::Instance().load(name);        \
-        assert(opt.has_value());                                   \
-        if (!opt.has_value()) {                                    \
-            qWarning() << "GetPluginPtr:" << name << "is nullptr"; \
-            return { std::nullopt };                               \
-        }                                                          \
-        return { reinterpret_cast<className*>(opt.value()) };      \
+#define GetPluginPtr(className)                                  \
+    [&](const QString& name) -> std::optional<className*> {      \
+        auto&& opt = QPluginManager::Instance().load(name);      \
+        assert(opt.has_value());                                 \
+        if (!opt.has_value()) {                                  \
+            qDebug() << "GetPluginPtr:" << name << "is nullptr"; \
+            return { std::nullopt };                             \
+        }                                                        \
+        return { reinterpret_cast<className*>(opt.value()) };    \
     }(#className)
 #endif // !GetPluginPtr
 #else

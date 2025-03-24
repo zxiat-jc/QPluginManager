@@ -52,7 +52,7 @@ void QPluginManagerImpl::loadPlugin(const QString& path)
         return;
     }
     if (!loader->load()) {
-        qWarning() << "加载失败:" << loader->errorString();
+        qDebug() << "加载失败:" << loader->errorString();
         loader->unload();
         return;
     }
