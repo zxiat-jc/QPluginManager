@@ -34,17 +34,17 @@ void QPluginManagerImpl::loadPlugin(const QString& path)
 {
     QFileInfo fileInfo(path);
     if (!fileInfo.isFile() || fileInfo.suffix() != PLUGIN_SUFFIX) {
-        qInfo() << "不是dll文件";
+        qDebug() << "不是dll文件";
         return;
     }
-    qInfo() << "加载插件路径:" << path;
+    qDebug() << "加载插件路径:" << path;
     if (this->_paths.contains(path)) {
-        qInfo() << "定制插件已加载:" << path;
+        qDebug() << "定制插件已加载:" << path;
         return;
     }
     QSharedPointer<QPluginLoader> loader(new QPluginLoader(path));
     if (loader->isLoaded()) {
-        qInfo() << "普通插件已加载:" << path;
+        qDebug() << "普通插件已加载:" << path;
         return;
     }
     auto&& meta = loader->metaData().value("MetaData").toObject();
@@ -60,8 +60,8 @@ void QPluginManagerImpl::loadPlugin(const QString& path)
         if (!obj->inherits("PluginInterface")) {
             return;
         }
-        qInfo() << "元信息:" << meta;
-        qDebug() << "插件名称:" << meta.value(NAME).toString();
+        qDebug() << "元信息:" << meta;
+        qInfo() << "加载插件名称:" << meta.value(NAME).toString();
         _pathNameMap.insert(path, meta.value(NAME).toString());
         _objMap.insert(meta.value(NAME).toString(), reinterpret_cast<PluginInterface*>(obj));
         _paths.push_back(path);
