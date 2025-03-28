@@ -96,15 +96,14 @@
 
 #ifdef QPLUGINMANAGER
 #ifndef GetPluginPtr
-#define GetPluginPtr(className)                                  \
-    [&](const QString& name) -> std::optional<className*> {      \
-        auto&& opt = QPluginManager::Instance().load(name);      \
-        assert(opt.has_value());                                 \
-        if (!opt.has_value()) {                                  \
-            qDebug() << "GetPluginPtr:" << name << "is nullptr"; \
-            return { std::nullopt };                             \
-        }                                                        \
-        return { reinterpret_cast<className*>(opt.value()) };    \
+#define GetPluginPtr(className)                                    \
+    [&](const QString& name) -> std::optional<className*> {        \
+        auto&& opt = QPluginManager::Instance().load(name);        \
+        if (!opt.has_value()) {                                    \
+            qWarning() << "GetPluginPtr:" << name << "is nullptr"; \
+            return { std::nullopt };                               \
+        }                                                          \
+        return { reinterpret_cast<className*>(opt.value()) };      \
     }(#className)
 #endif // !GetPluginPtr
 #else
