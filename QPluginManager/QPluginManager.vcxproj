@@ -64,7 +64,7 @@
     <QtPlugin>false</QtPlugin>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Qt5Release|x64'" Label="QtSettings">
-    <QtInstall>Q5</QtInstall>
+    <QtInstall>CURRENT_QT5</QtInstall>
     <QtModules>core</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
     <QtPlugin>false</QtPlugin>
