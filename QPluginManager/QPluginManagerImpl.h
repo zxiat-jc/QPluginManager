@@ -32,6 +32,8 @@ private:
      */
     QList<QString> _paths;
 
+    QList<std::function<bool(PluginInterface*)>> _filters;
+
 public:
     ~QPluginManagerImpl() override;
 
@@ -92,4 +94,10 @@ public:
      * @return 初始化状态
      */
     bool delayedInitialize();
+
+    /**
+     * @brief 筛选过滤
+     * @param function
+     */
+    void appendFilter(std::function<bool(PluginInterface* ptr)> fun);
 };

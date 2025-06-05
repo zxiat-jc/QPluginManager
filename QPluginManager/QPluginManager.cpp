@@ -66,3 +66,8 @@ bool QPluginManager::delayedInitialize()
 {
     return this->_impl->delayedInitialize();
 }
+
+void QPluginManager::appendFilter(std::function<bool(PluginInterface* ptr)> fun)
+{
+    return this->_impl->appendFilter(fun);
+}

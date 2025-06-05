@@ -60,10 +60,18 @@ void QPluginManagerImpl::loadPlugin(const QString& path)
         if (!obj->inherits("PluginInterface")) {
             return;
         }
+        auto&& ptr = reinterpret_cast<PluginInterface*>(obj);
+        ptr->setObjectName(meta.value(NAME).toString());
+        for (auto&& filter : this->_filters) {
+            if (!filter(ptr)) {
+                qInfo() << "忽略加载插件名称:" << meta.value(NAME).toString();
+                return;
+            }
+        }
         qDebug() << "元信息:" << meta;
         qInfo() << "加载插件名称:" << meta.value(NAME).toString();
         _pathNameMap.insert(path, meta.value(NAME).toString());
-        _objMap.insert(meta.value(NAME).toString(), reinterpret_cast<PluginInterface*>(obj));
+        _objMap.insert(meta.value(NAME).toString(), ptr);
         _paths.push_back(path);
     }
 }
@@ -143,4 +151,9 @@ bool QPluginManagerImpl::delayedInitialize()
         plugin->delayedInitialize();
     });
     return true;
+}
+
+void QPluginManagerImpl::appendFilter(std::function<bool(PluginInterface* ptr)> fun)
+{
+    this->_filters.append(fun);
 }
