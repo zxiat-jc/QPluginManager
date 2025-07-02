@@ -7,7 +7,7 @@
 
 #include <algorithm>
 
-QPluginManagerImpl::~QPluginManagerImpl()
+void QPluginManagerImpl::release()
 {
     qDebug() << "QPluginManagerImpl::~QPluginManagerImpl()";
     for (size_t i = 0; i < _paths.size(); i++) {
@@ -28,6 +28,11 @@ QPluginManagerImpl::~QPluginManagerImpl()
     _objMap.clear();
     // 等待消息执行结束
     QCoreApplication::processEvents();
+}
+
+QPluginManagerImpl::~QPluginManagerImpl()
+{
+    qDebug() << "QPluginManagerImpl::~QPluginManagerImpl()";
 }
 
 void QPluginManagerImpl::loadPlugin(const QString& path)
@@ -121,6 +126,10 @@ QList<QString> QPluginManagerImpl::pluginNames() const
 
 bool QPluginManagerImpl::initializes(const QStringList& args, QString& error)
 {
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, [this]() {
+        qDebug() << "Application is about to quit.";
+        this->release();
+    });
     for (auto&& plugin : _objMap) {
         if (plugin) {
             plugin->initialize(args, error);

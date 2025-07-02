@@ -34,6 +34,9 @@ private:
 
     QList<std::function<bool(PluginInterface*)>> _filters;
 
+protected:
+    void release();
+
 public:
     ~QPluginManagerImpl() override;
 
