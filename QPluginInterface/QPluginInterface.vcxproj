@@ -123,6 +123,7 @@
   <PropertyGroup Label="Vcpkg">
     <VcpkgXUseBuiltInApplocalDeps>false</VcpkgXUseBuiltInApplocalDeps>
     <VcpkgApplocalDeps>false</VcpkgApplocalDeps>
+    <VcpkgEnabled>false</VcpkgEnabled>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <VcpkgConfiguration>Debug</VcpkgConfiguration>
