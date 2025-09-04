@@ -35,6 +35,9 @@
     <ClInclude Include="QClassRegister.h">
       <Filter>Header Files\alias</Filter>
     </ClInclude>
+    <ClInclude Include="AutoRegistered.h">
+      <Filter>Header Files\interface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="PluginInterface.h">
