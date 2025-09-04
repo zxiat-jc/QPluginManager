@@ -48,5 +48,8 @@
     <ClCompile Include="PluginInterface.cpp">
       <Filter>Source Files\interface</Filter>
     </ClCompile>
+    <ClCompile Include="AutoRegistered.cpp">
+      <Filter>Source Files\interface</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

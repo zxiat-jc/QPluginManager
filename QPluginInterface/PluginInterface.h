@@ -2,11 +2,21 @@
 
 #include <QObject>
 
+#ifndef BUILD_STATIC
+#if defined(QPLUGININTERFACE_LIB)
+#define QPLUGININTERFACE_EXPORT Q_DECL_EXPORT
+#else
+#define QPLUGININTERFACE_EXPORT Q_DECL_IMPORT
+#endif
+#else
+#define QPLUGININTERFACE_EXPORT
+#endif
+
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #pragma execution_character_set("utf-8")
 #endif
 
-class PluginInterface : public QObject {
+class QPLUGININTERFACE_EXPORT PluginInterface : public QObject {
     Q_OBJECT;
 
 public:
