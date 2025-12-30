@@ -12,6 +12,7 @@
 #define QPLUGININTERFACE_EXPORT
 #endif
 
+#include <any>
 #include <atomic>
 #include <concepts>
 #include <functional>
@@ -24,9 +25,15 @@
 #include <utility>
 #include <vector>
 
+/**
+ * @brief std::any 存储创建器，创建器的签名(参数)是不确定的
+ */
 struct RawEntry {
     const char* type_key;
-    std::function<void*()> creator;
+    /**
+     * @brief 存储 std::function<Base*(Args...)>
+     */
+    std::any creator;
 };
 
 class QPLUGININTERFACE_EXPORT RegistryHub {
@@ -44,7 +51,7 @@ public:
      * @param type_key
      * @param creator
      */
-    void add(std::string_view baseKey, const char* type_key, std::function<void*()> creator);
+    void add(std::string_view baseKey, const char* type_key, std::any creator);
 
     /**
      * @brief 获取该BaseKey的注册信息快照（读侧无锁安全）
@@ -80,14 +87,22 @@ private:
     std::unordered_map<std::string, Bucket, H, Eq> map_;
 };
 
-// BaseKey 默认：typeid(Base).name()
+/**
+ * @brief BaseKey 默认：typeid(Base).name()
+ * @tparam Base
+ * @return
+ */
 template <typename Base>
 inline const char* RegistryBaseKey()
 {
     return typeid(Base).name();
 }
 
-// type_key 默认：typeid(T).name()
+/**
+ * @brief type_key 默认：typeid(T).name()
+ * @tparam T
+ * @return
+ */
 template <typename T>
 inline const char* RegistryTypeKey()
 {
@@ -110,12 +125,20 @@ inline const char* RegistryTypeKey()
 
 /**
  * @brief 跨动态库共享的静态注册表
- * @tparam Base
+ * @tparam Base 基类类型
+ * @tparam Args 构造函数参数类型列表（默认为空，即无参构造）
  */
-template <typename Base>
+template <typename Base, typename... Args>
 class StaticRegistry {
 public:
-    using Factory = std::function<std::unique_ptr<Base>()>;
+    /**
+     * @brief 工厂函数返回 unique_ptr<Base>，接受 Args...
+     */
+    using Factory = std::function<std::unique_ptr<Base>(Args...)>;
+    /**
+     * @brief 原始创建者函数签名：返回 void*，接受 Args...
+     */
+    using RawCreator = std::function<void*(Args...)>;
 
     struct Entry {
         const char* type_key;
@@ -139,12 +162,20 @@ public:
             auto snap = hub.snapshot(baseKey);
             cache.reserve(snap->size());
             for (const auto& re : *snap) {
-                // 将 RawEntry 的 creator 转成强类型工厂（包一层 unique_ptr）
-                Factory f = [c = re.creator]() -> std::unique_ptr<Base> {
-                    return std::unique_ptr<Base>(static_cast<Base*>(c()));
-                };
+                // 将 RawEntry 的 std::any 转回具体的 RawCreator
+                try {
+                    auto rawFunc = std::any_cast<RawCreator>(re.creator);
 
-                cache.push_back(Entry { re.type_key, std::move(f) });
+                    // 包装成类型安全的 Factory
+                    Factory f = [c = std::move(rawFunc)](Args... args) -> std::unique_ptr<Base> {
+                        // 转发参数
+                        return std::unique_ptr<Base>(static_cast<Base*>(c(std::forward<Args>(args)...)));
+                    };
+                    cache.push_back(Entry { re.type_key, std::move(f) });
+                } catch (const std::bad_any_cast&) {
+                    // 如果签名不匹配（例如在这个 Base 下注册了错误参数的子类），这里会忽略
+                    continue;
+                }
             }
             cachedVersion = v;
         }
@@ -166,16 +197,17 @@ public:
     }
 
     /**
-     * @brief 通过字符串键创建；不存在则返回 nullptr
+     * @brief 通过字符串键创建（支持传参）
      * @param type_key
+     * @param args 构造参数
      * @return
      */
-    static std::unique_ptr<Base> create(std::string_view type_key)
+    static std::unique_ptr<Base> create(std::string_view type_key, Args... args)
     {
         const auto& es = entries();
         for (const auto& e : es) {
             if (e.type_key == type_key)
-                return e.factory();
+                return e.factory(std::forward<Args>(args)...);
         }
         return nullptr;
     }
@@ -202,15 +234,15 @@ public:
      */
     template <typename Derived>
         requires std::derived_from<Derived, Base>
-    static std::function<std::unique_ptr<Derived>()> factoryOf()
+    static std::function<std::unique_ptr<Derived>(Args...)> factoryOf()
     {
         const char* key = RegistryTypeKey<Derived>();
         const auto& es = entries();
         for (const auto& e : es) {
             if (e.type_key == key) {
                 auto bf = e.factory;
-                return [bf = std::move(bf)]() -> std::unique_ptr<Derived> {
-                    std::unique_ptr<Base> b = bf();
+                return [bf = std::move(bf)](Args... args) -> std::unique_ptr<Derived> {
+                    std::unique_ptr<Base> b = bf(std::forward<Args>(args)...);
                     return std::unique_ptr<Derived>(static_cast<Derived*>(b.release()));
                 };
             }
@@ -218,11 +250,6 @@ public:
         return {};
     }
 
-    /**
-     * @brief 是否已注册
-     * @param type_key
-     * @return
-     */
     static bool IsRegistered(std::string_view type_key)
     {
         const auto& es = entries();
@@ -240,37 +267,40 @@ public:
     }
 
     /**
-     * @brief 供自动注册使用（不建议业务侧直接调用）
-     * @param type_key
-     * @param creator
+     * @brief 供自动注册使用
      */
-    static void AddRaw(const char* type_key, std::function<void*()> creator)
+    static void AddRaw(const char* type_key, RawCreator creator)
     {
-        RegistryHub::Instance().add(RegistryBaseKey<Base>(), type_key, creator);
+        // 存入 std::any
+        RegistryHub::Instance().add(RegistryBaseKey<Base>(), type_key, std::any(creator));
     }
 };
 
 /**
- * @brief 自动注册基类AUTO_REGISTER(Derived, Base)
+ * @brief 自动注册基类
+ * @tparam Base 基类
+ * @tparam Args 构造参数类型列表
  */
-template <typename Base>
+template <typename Base, typename... Args>
 class AutoRegistered {
 public:
     template <typename Derived>
         requires std::derived_from<Derived, Base>
     struct Registrar {
         /**
-         * @brief 零捕获跳板：new Derived()，以 Base* 形式返回并擦成 void*
-         * @return
+         * @brief 跳板函数：接收 Args... 并 new Derived(args...)
          */
-        static void* CreateTrampoline()
+        static void* CreateTrampoline(Args... args)
         {
-            return static_cast<Base*>(new Derived());
+            return static_cast<Base*>(new Derived(std::forward<Args>(args)...));
         }
 
         Registrar()
         {
-            StaticRegistry<Base>::AddRaw(RegistryTypeKey<Derived>(), &CreateTrampoline);
+            // 将特定签名的函数指针注册进去
+            StaticRegistry<Base, Args...>::AddRaw(
+                RegistryTypeKey<Derived>(),
+                std::function<void*(Args...)>(&CreateTrampoline));
         }
     };
 
@@ -283,9 +313,12 @@ public:
     }
 };
 
+// 宏定义修改：支持变长参数 (__VA_ARGS__)
+// 用法 1 (无参): AUTO_REGISTER(MyClass, MyBase)
+// 用法 2 (带参): AUTO_REGISTER(MyClass, MyBase, int, std::string)
 #ifndef AUTO_REGISTER
-#define AUTO_REGISTER(CLASS, BASE)                               \
-    namespace {                                                  \
-        AutoRegistered<BASE>::Registrar<CLASS> auto_reg_##CLASS; \
+#define AUTO_REGISTER(CLASS, BASE, ...)                                       \
+    namespace {                                                               \
+        AutoRegistered<BASE, __VA_ARGS__>::Registrar<CLASS> auto_reg_##CLASS; \
     }
 #endif

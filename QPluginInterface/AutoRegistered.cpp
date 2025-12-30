@@ -1,54 +1,51 @@
-﻿#include <algorithm>
+﻿#include "AutoRegistered.h"
 
-#include "AutoRegistered.h"
+#include <mutex>
 
-RegistryHub::RegistryHub()
-{
-}
-
-RegistryHub::~RegistryHub()
-{
-}
+RegistryHub::RegistryHub() { }
+RegistryHub::~RegistryHub() { }
 
 RegistryHub& RegistryHub::Instance()
 {
-    static RegistryHub hub;
-    return hub;
+    static RegistryHub instance;
+    return instance;
 }
 
-auto RegistryHub::ensure_bucket_unlocked(std::string_view baseKey) -> Bucket&
+void RegistryHub::add(std::string_view baseKey, const char* type_key, std::any creator)
 {
-    auto [it, inserted] = map_.try_emplace(std::string(baseKey)); // 仅在插入时默认构造 Bucket
-    return it->second;
-}
+    std::unique_lock lock(mtx_);
+    auto& bucket = ensure_bucket_unlocked(baseKey);
 
-void RegistryHub::add(std::string_view baseKey, const char* typeKey, std::function<void*()> creator)
-{
-    std::unique_lock lk(mtx_);
-    Bucket& b = ensure_bucket_unlocked(baseKey);
+    // Copy-on-write 策略：复制旧列表，添加新项，原子替换
+    auto newVec = std::make_shared<std::vector<RawEntry>>(*bucket.items);
+    newVec->push_back(RawEntry { type_key, std::move(creator) });
 
-    // 基于旧快照拷贝构建新快照，读侧只读共享_ptr，安全无锁
-    std::vector<RawEntry> next = b.items ? *b.items : std::vector<RawEntry> {};
-    next.push_back(RawEntry { typeKey, creator });
-    b.items = std::shared_ptr<const std::vector<RawEntry>>(new std::vector<RawEntry>(std::move(next)));
-    ++b.ver;
+    bucket.items = newVec;
+    bucket.ver.fetch_add(1, std::memory_order_release);
 }
 
 std::shared_ptr<const std::vector<RawEntry>> RegistryHub::snapshot(std::string_view baseKey) const
 {
     std::shared_lock lock(mtx_);
-    std::string key(baseKey);
-    if (auto it = map_.find(key); it != map_.end() && it->second.items)
-        return it->second.items;
-    static const auto kEmpty = std::make_shared<const std::vector<RawEntry>>();
-    return kEmpty;
+    auto it = map_.find(std::string(baseKey)); // 注意：map key 是 string
+    if (it == map_.end()) {
+        static auto empty = std::make_shared<const std::vector<RawEntry>>();
+        return empty;
+    }
+    return it->second.items;
 }
 
 std::size_t RegistryHub::version(std::string_view baseKey) const
 {
     std::shared_lock lock(mtx_);
-    std::string key(baseKey);
-    if (auto it = map_.find(key); it != map_.end())
-        return it->second.ver.load(std::memory_order_relaxed);
-    return 0;
+    auto it = map_.find(std::string(baseKey));
+    if (it == map_.end())
+        return 0;
+    return it->second.ver.load(std::memory_order_acquire);
+}
+
+RegistryHub::Bucket& RegistryHub::ensure_bucket_unlocked(std::string_view baseKey)
+{
+    // 假设调用者已经持有写锁
+    return map_[std::string(baseKey)];
 }
