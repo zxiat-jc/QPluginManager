@@ -152,13 +152,14 @@ bool QPluginManagerImpl::extensionsInitialized()
 
 bool QPluginManagerImpl::delayedInitialize()
 {
-    auto&& values = _objMap.values();
-    auto rbegin = std::make_reverse_iterator(values.end());
-    auto rend = std::make_reverse_iterator(values.begin());
+    QMetaObject::invokeMethod(this, [this]() {
+        auto&& values = _objMap.values();
+        auto rbegin = std::make_reverse_iterator(values.end());
+        auto rend = std::make_reverse_iterator(values.begin());
 
-    std::for_each(rbegin, rend, [](const auto& plugin) {
-        plugin->delayedInitialize();
-    });
+        std::for_each(rbegin, rend, [](const auto& plugin) {
+            plugin->delayedInitialize();
+        }); }, Qt::QueuedConnection);
     return true;
 }
 
