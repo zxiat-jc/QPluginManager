@@ -88,25 +88,77 @@ private:
 };
 
 /**
- * @brief BaseKey 默认：typeid(Base).name()
+ * @brief 从编译器函数签名中提取干净的类名
+ * @tparam T
+ * @return
+ */
+template <typename T>
+inline const char* ExtractClassName()
+{
+    static std::string cleanName;
+    if (cleanName.empty()) {
+#if defined(_MSC_VER)
+        // MSVC: __FUNCSIG__ 格式类似 "const char *__cdecl ExtractClassName<class MyNamespace::MyClass>(void)"
+        constexpr std::string_view sig = __FUNCSIG__;
+        constexpr std::string_view prefix = "ExtractClassName<";
+        constexpr std::string_view suffix = ">(void)";
+        
+        auto start = sig.find(prefix);
+        if (start != std::string_view::npos) {
+            start += prefix.length();
+            // 跳过 "class ", "struct ", "enum " 等关键字
+            while (start < sig.length() && sig[start] == ' ') ++start;
+            if (sig.substr(start, 6) == "class ") start += 6;
+            else if (sig.substr(start, 7) == "struct ") start += 7;
+            else if (sig.substr(start, 5) == "enum ") start += 5;
+            
+            auto end = sig.find(suffix, start);
+            if (end != std::string_view::npos) {
+                cleanName = std::string(sig.substr(start, end - start));
+            }
+        }
+#elif defined(__GNUC__) || defined(__clang__)
+        // GCC/Clang: __PRETTY_FUNCTION__ 格式类似 "const char* ExtractClassName() [with T = MyNamespace::MyClass]"
+        constexpr std::string_view sig = __PRETTY_FUNCTION__;
+        constexpr std::string_view prefix = "[with T = ";
+        constexpr char suffix = ']';
+        
+        auto start = sig.find(prefix);
+        if (start != std::string_view::npos) {
+            start += prefix.length();
+            auto end = sig.find(suffix, start);
+            if (end != std::string_view::npos) {
+                cleanName = std::string(sig.substr(start, end - start));
+            }
+        }
+#else
+        // 回退方案：使用 typeid
+        cleanName = typeid(T).name();
+#endif
+    }
+    return cleanName.c_str();
+}
+
+/**
+ * @brief BaseKey 默认：干净的类名（不带修饰符）
  * @tparam Base
  * @return
  */
 template <typename Base>
 inline const char* RegistryBaseKey()
 {
-    return typeid(Base).name();
+    return ExtractClassName<Base>();
 }
 
 /**
- * @brief type_key 默认：typeid(T).name()
+ * @brief type_key 默认：干净的类名（不带修饰符）
  * @tparam T
  * @return
  */
 template <typename T>
 inline const char* RegistryTypeKey()
 {
-    return typeid(T).name();
+    return ExtractClassName<T>();
 }
 
 // 显式指定 BaseKey
