@@ -20,6 +20,7 @@
 #include <shared_mutex>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <typeinfo>
 #include <unordered_map>
 #include <utility>
@@ -102,16 +103,20 @@ inline const char* ExtractClassName()
         constexpr std::string_view sig = __FUNCSIG__;
         constexpr std::string_view prefix = "ExtractClassName<";
         constexpr std::string_view suffix = ">(void)";
-        
+
         auto start = sig.find(prefix);
         if (start != std::string_view::npos) {
             start += prefix.length();
             // 跳过 "class ", "struct ", "enum " 等关键字
-            while (start < sig.length() && sig[start] == ' ') ++start;
-            if (sig.substr(start, 6) == "class ") start += 6;
-            else if (sig.substr(start, 7) == "struct ") start += 7;
-            else if (sig.substr(start, 5) == "enum ") start += 5;
-            
+            while (start < sig.length() && sig[start] == ' ')
+                ++start;
+            if (sig.substr(start, 6) == "class ")
+                start += 6;
+            else if (sig.substr(start, 7) == "struct ")
+                start += 7;
+            else if (sig.substr(start, 5) == "enum ")
+                start += 5;
+
             auto end = sig.find(suffix, start);
             if (end != std::string_view::npos) {
                 cleanName = std::string(sig.substr(start, end - start));
@@ -122,7 +127,7 @@ inline const char* ExtractClassName()
         constexpr std::string_view sig = __PRETTY_FUNCTION__;
         constexpr std::string_view prefix = "[with T = ";
         constexpr char suffix = ']';
-        
+
         auto start = sig.find(prefix);
         if (start != std::string_view::npos) {
             start += prefix.length();
@@ -369,8 +374,8 @@ public:
 // 用法 1 (无参): AUTO_REGISTER(MyClass, MyBase)
 // 用法 2 (带参): AUTO_REGISTER(MyClass, MyBase, int, std::string)
 #ifndef AUTO_REGISTER
-#define AUTO_REGISTER(CLASS, BASE, ...)                                       \
-    namespace {                                                               \
-        AutoRegistered<BASE, __VA_ARGS__>::Registrar<CLASS> auto_reg_##CLASS; \
+#define AUTO_REGISTER(CLASS, BASE, ...)                                                \
+    namespace {                                                                        \
+        AutoRegistered<BASE, __VA_ARGS__>::Registrar<CLASS> auto_reg_##CLASS##_##BASE; \
     }
 #endif
