@@ -281,8 +281,9 @@ public:
     {
         const auto& es = entries();
         for (const auto& e : es) {
-            if (e.type_key == type_key)
+            if (e.type_key == type_key) {
                 return e.factory;
+            }
         }
         return {};
     }
@@ -313,9 +314,11 @@ public:
     static bool IsRegistered(std::string_view type_key)
     {
         const auto& es = entries();
-        for (const auto& e : es)
-            if (e.type_key == type_key)
+        for (const auto& e : es) {
+            if (e.type_key == type_key) {
                 return true;
+            }
+        }
         return false;
     }
 
