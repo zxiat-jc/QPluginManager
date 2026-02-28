@@ -16,6 +16,7 @@
 #include <atomic>
 #include <concepts>
 #include <functional>
+#include <limits>
 #include <memory>
 #include <shared_mutex>
 #include <string>
@@ -354,10 +355,12 @@ public:
 
         Registrar()
         {
-            // 将特定签名的函数指针注册进去
-            StaticRegistry<Base, Args...>::AddRaw(
-                RegistryTypeKey<Derived>(),
-                std::function<void*(Args...)>(&CreateTrampoline));
+            // 仅当 Derived 是非抽象且可用 Args 构造时才进行注册
+            if constexpr (!std::is_abstract_v<Derived> && std::is_constructible_v<Derived, Args...>) {
+                StaticRegistry<Base, Args...>::AddRaw(
+                    RegistryTypeKey<Derived>(),
+                    std::function<void*(Args...)>(&CreateTrampoline));
+            }
         }
     };
 
@@ -374,8 +377,13 @@ public:
 // 用法 1 (无参): AUTO_REGISTER(MyClass, MyBase)
 // 用法 2 (带参): AUTO_REGISTER(MyClass, MyBase, int, std::string)
 #ifndef AUTO_REGISTER
-#define AUTO_REGISTER(CLASS, BASE, ...)                                                \
-    namespace {                                                                        \
-        AutoRegistered<BASE, __VA_ARGS__>::Registrar<CLASS> auto_reg_##CLASS##_##BASE; \
+#define CONCAT_IMPL(a, b) a##b
+#define CONCAT(a, b) CONCAT_IMPL(a, b)
+
+#define AUTO_REGISTER(CLASS, BASE, ...)                                     \
+    namespace {                                                             \
+        /* CLASS 和 BASE 可以是 ns::MyClass、ns::MyBase 等带 :: 的限定名 */ \
+        AutoRegistered<BASE, ##__VA_ARGS__>::Registrar<CLASS>               \
+            CONCAT(auto_reg_, __COUNTER__);                                 \
     }
 #endif
