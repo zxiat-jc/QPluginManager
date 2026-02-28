@@ -13,7 +13,7 @@ RegistryHub& RegistryHub::Instance()
 
 void RegistryHub::add(std::string_view baseKey, const char* type_key, std::any creator)
 {
-    std::unique_lock lock(mtx_);
+    std::unique_lock lock(_mtx);
     auto& bucket = ensure_bucket_unlocked(baseKey);
 
     // Copy-on-write 策略：复制旧列表，添加新项，原子替换
@@ -26,9 +26,9 @@ void RegistryHub::add(std::string_view baseKey, const char* type_key, std::any c
 
 std::shared_ptr<const std::vector<RawEntry>> RegistryHub::snapshot(std::string_view baseKey) const
 {
-    std::shared_lock lock(mtx_);
-    auto it = map_.find(std::string(baseKey)); // 注意：map key 是 string
-    if (it == map_.end()) {
+    std::shared_lock lock(_mtx);
+    auto it = _map.find(std::string(baseKey)); // 注意：map key 是 string
+    if (it == _map.end()) {
         static auto empty = std::make_shared<const std::vector<RawEntry>>();
         return empty;
     }
@@ -37,9 +37,9 @@ std::shared_ptr<const std::vector<RawEntry>> RegistryHub::snapshot(std::string_v
 
 std::size_t RegistryHub::version(std::string_view baseKey) const
 {
-    std::shared_lock lock(mtx_);
-    auto it = map_.find(std::string(baseKey));
-    if (it == map_.end())
+    std::shared_lock lock(_mtx);
+    auto it = _map.find(std::string(baseKey));
+    if (it == _map.end())
         return 0;
     return it->second.ver.load(std::memory_order_acquire);
 }
@@ -47,5 +47,5 @@ std::size_t RegistryHub::version(std::string_view baseKey) const
 RegistryHub::Bucket& RegistryHub::ensure_bucket_unlocked(std::string_view baseKey)
 {
     // 假设调用者已经持有写锁
-    return map_[std::string(baseKey)];
+    return _map[std::string(baseKey)];
 }

@@ -85,8 +85,8 @@ private:
      */
     Bucket& ensure_bucket_unlocked(std::string_view baseKey);
 
-    mutable std::shared_mutex mtx_;
-    std::unordered_map<std::string, Bucket, H, Eq> map_;
+    mutable std::shared_mutex _mtx;
+    std::unordered_map<std::string, Bucket, H, Eq> _map;
 };
 
 /**
@@ -249,8 +249,9 @@ public:
         const auto& es = entries();
         std::vector<std::string_view> out;
         out.reserve(es.size());
-        for (const auto& e : es)
+        for (const auto& e : es) {
             out.push_back(e.type_key);
+        }
         return out;
     }
 
@@ -264,8 +265,9 @@ public:
     {
         const auto& es = entries();
         for (const auto& e : es) {
-            if (e.type_key == type_key)
+            if (e.type_key == type_key) {
                 return e.factory(std::forward<Args>(args)...);
+            }
         }
         return nullptr;
     }
